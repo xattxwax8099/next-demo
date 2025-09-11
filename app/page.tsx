@@ -1,5 +1,5 @@
 // app/page.tsx
-import { getBaseUrl } from '/lib/base-url';
+import { getBaseUrl } from '../lib/base-url';
 
 async function getData() {
   const base = getBaseUrl(); // << ได้ absolute เสมอใน server
