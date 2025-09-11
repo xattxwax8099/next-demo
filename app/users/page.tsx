@@ -1,21 +1,27 @@
 import { getBaseUrl } from '@/lib/base-url';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function getUsers() {
+type User = { id:number; name:string; email:string };
+
+async function getUsers(): Promise<User[] | { error: string }> {
   const base = getBaseUrl();
   const res = await fetch(`${base}/api/users`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch /api/users');
-  return res.json() as Promise<Array<{ id:number; name:string; email:string }>>;
+  if (!res.ok) return { error: `status:${res.status}` };
+  return res.json();
 }
 
 export default async function UsersPage() {
-  const users = await getUsers();
+  const data = await getUsers();
+  if ('error' in data) {
+    return <p style={{ color:'#c00' }}>Failed to load users → {data.error}</p>;
+  }
   return (
     <section>
       <h1>Users (SSR via /api/users)</h1>
       <ul className="list">
-        {users.map(u => (
+        {data.map(u => (
           <li key={u.id}>
             <b>{u.name}</b> — <span style={{ color: '#666' }}>{u.email}</span>
           </li>

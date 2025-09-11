@@ -1,44 +1,48 @@
-# Next.js Multi-Page Mock API Demo (Vercel-ready)
+# Next.js API-first (SSR) • Vercel-ready
 
-ตัวอย่างโปรเจกต์ Next.js (App Router) ที่มีหลายเพจ, มี API จำลอง (mock) และ deploy บน Vercel ได้ทันที
+โปรเจกต์ตัวอย่าง Next.js (App Router) ที่ **หน้าเพจดึงข้อมูลผ่าน API โดยตรง** (ไม่ import จาก data) และ deploy บน Vercel ได้ทันที
 
-## โครงสร้าง
+## โครงสร้างหลัก
 ```
 app/
   api/
-    posts/route.ts
+    health/route.ts
     users/route.ts
-  posts/
-    [id]/page.tsx
-    page.tsx
-  users/
-    page.tsx
+    posts/route.ts
+    posts/[id]/route.ts
+  users/page.tsx
+  posts/page.tsx
+  posts/[id]/page.tsx
   layout.tsx
   page.tsx
 lib/
-  data.ts
+  base-url.ts
+  data.ts            # mock data (ใช้ใน API เท่านั้น)
 ```
 
 ## รันในเครื่อง
 ```bash
 npm install
 npm run dev
+# http://localhost:3000
 ```
 
-## Build (ทดสอบก่อนขึ้นจริง)
+## Build & Run
 ```bash
-npm run build && npm start
+npm run build
+npm start
 ```
 
-## Deploy ขึ้น Vercel
-1. สร้าง repo Git และ push โค้ดนี้
-2. เข้า https://vercel.com → New Project → เลือก repo
-3. Framework: **Next.js** (Auto)
-4. กด Deploy ได้เลย (ไม่มี ENV จำเป็น)
+## Deploy บน Vercel
+1. สร้าง repo และ push โค้ดนี้
+2. ไปที่ https://vercel.com → New Project → เลือก repo → Deploy
+3. (แนะนำ) ตั้ง ENV `NEXT_PUBLIC_SITE_URL=https://<โดเมนของคุณ>` ใน Project Settings
 
-> โปรเจกต์นี้ **ไม่ fetch API ของตัวเองตอน build** — หน้าเพจใช้ฟังก์ชันจาก `lib/data.ts` โดยตรง ทำให้ build ผ่านแน่นอน และยังคงมี ISR (`revalidate = 10`) ให้ดูพฤติกรรม cache ได้
+## จุดเด่น
+- หน้าเพจใช้ **SSR** (`dynamic = 'force-dynamic'`) เพื่อให้ fetch API ตอน request-time ไม่ไป fetch ตอน build
+- `lib/base-url.ts` คืน **absolute URL** ที่ถูกต้องทั้งบน local และบน Vercel (รองรับ x-forwarded headers)
+- มี `GET /api/health` สำหรับเช็คสถานะที่ Production
 
----
-
-**อัปเดต:** ตอนนี้เพจทั้งหมดเรียกข้อมูลผ่าน API (`/api/*`) ด้วย SSR แล้ว (ใช้ `dynamic = 'force-dynamic'`).
-โค้ดตัวอย่างอยู่ใน `app/*.tsx` และตัวช่วย `lib/base-url.ts` สำหรับสร้าง absolute URL ตอนรันบน Vercel/Local.
+ลองเรียก:
+- `/api/users`, `/api/posts`, `/api/posts/101`, `/api/health`
+- หน้า: `/`, `/users`, `/posts`, `/posts/101`
