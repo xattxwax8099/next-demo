@@ -1,13 +1,17 @@
+// app/page.tsx
+import { getBaseUrl } from '/lib/base-url';
+
 async function getData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}/api/data`, {
+  const base = getBaseUrl(); // << ได้ absolute เสมอใน server
+  const res = await fetch(`${base}/api/data`, {
     next: { revalidate: 10 },
   });
+  if (!res.ok) throw new Error('Failed to fetch /api/data');
   return res.json();
 }
 
 export default async function Home() {
   const data = await getData();
-
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold">Next.js App Router API & Caching Demo</h1>
