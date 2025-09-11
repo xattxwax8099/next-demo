@@ -1,20 +1,30 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
 
-export const metadata = {
-  title: 'Next.js App Router Caching Demo',
-  description: 'Demo: SSR vs ISR vs No-Cache with On-Demand Revalidation',
+export const metadata: Metadata = {
+  title: 'Next.js Multi-Page Mock Demo',
+  description: 'Multiple pages, mock API, Vercel-ready'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <nav className="p-4 bg-gray-100 border-b">
-          <Link href="/" className="mr-4">Home</Link>
-          <Link href="/dashboard" className="mr-4">Dashboard</Link>
-        </nav>
-        {children}
+      <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0 }}>
+        <header style={{ padding: '12px 16px', borderBottom: '1px solid #eee' }}>
+          <b>Demo</b>
+          <nav style={{ display: 'inline-block', marginLeft: 16 }}>
+            <Link href="/">Home</Link>
+            <span style={{ margin: '0 8px' }}>|</span>
+            <Link href="/users">Users</Link>
+            <span style={{ margin: '0 8px' }}>|</span>
+            <Link href="/posts">Posts</Link>
+          </nav>
+        </header>
+        <main style={{ padding: 16 }}>{children}</main>
+        <footer style={{ padding: 16, borderTop: '1px solid #eee', color: '#555' }}>
+          Deployed on Vercel • ISR demo every 10s
+        </footer>
       </body>
     </html>
   );

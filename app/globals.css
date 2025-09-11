@@ -1,8 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Custom global styles */
-body {
-  font-family: sans-serif;
+:root {
+  --card: #fafafa;
+  --border: #eaeaea;
 }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.list { padding-left: 18px; }
+.list li { margin-bottom: 6px; }
+a { color: #0070f3; text-decoration: none; }
+a:hover { text-decoration: underline; }

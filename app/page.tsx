@@ -1,24 +1,39 @@
-// app/page.tsx
-import { getBaseUrl } from '../lib/base-url';
+import { getBaseUrl } from '@/lib/base-url';
 
-async function getData() {
-  const base = getBaseUrl(); // << ได้ absolute เสมอใน server
-  const res = await fetch(`${base}/api/data`, {
-    next: { revalidate: 10 },
-  });
-  if (!res.ok) throw new Error('Failed to fetch /api/data');
-  return res.json();
+export const dynamic = 'force-dynamic'; // don't prerender, fetch at request-time
+// export const fetchCache = 'force-no-store'; // alternative
+
+async function getSummary() {
+  const base = getBaseUrl();
+  const [usersRes, postsRes] = await Promise.all([
+    fetch(`${base}/api/users`, { cache: 'no-store' }),
+    fetch(`${base}/api/posts`, { cache: 'no-store' }),
+  ]);
+  if (!usersRes.ok || !postsRes.ok) {
+    throw new Error('Failed to fetch /api/users or /api/posts');
+  }
+  const [users, posts] = await Promise.all([usersRes.json(), postsRes.json()]);
+  return { usersCount: users.length, postsCount: posts.length };
 }
 
 export default async function Home() {
-  const data = await getData();
+  const { usersCount, postsCount } = await getSummary();
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">Next.js App Router API & Caching Demo</h1>
-      <div className="mt-4 p-4 border rounded">
-        <p><strong>Message:</strong> {data.message}</p>
-        <p><strong>Timestamp:</strong> {data.timestamp}</p>
+    <section>
+      <h1>Next.js App Router: API-first (SSR fetch)</h1>
+      <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+        <div className="card">
+          <h3>Users</h3>
+          <p>Total: <b>{usersCount}</b></p>
+        </div>
+        <div className="card">
+          <h3>Posts</h3>
+          <p>Total: <b>{postsCount}</b></p>
+        </div>
       </div>
-    </main>
+      <p style={{ marginTop: 12, color: '#666' }}>
+        This page calls <code>/api/users</code> and <code>/api/posts</code> on each request.
+      </p>
+    </section>
   );
 }
