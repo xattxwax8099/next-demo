@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getBaseUrl } from '@/lib/base-url';
+import { serverFetch } from '@/lib/server-fetch';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -8,10 +8,9 @@ type User = { id:number; name:string; email:string };
 type Post = { id:number; title:string; body:string; authorId:number };
 
 async function getData() {
-  const base = getBaseUrl();
   const [uRes, pRes] = await Promise.all([
-    fetch(`${base}/api/users`, { cache: 'no-store' }),
-    fetch(`${base}/api/posts`, { cache: 'no-store' }),
+    serverFetch('/api/users'),
+    serverFetch('/api/posts'),
   ]);
   if (!uRes.ok || !pRes.ok) {
     return { error: `users:${uRes.status} posts:${pRes.status}`, posts: [], authors: new Map<number,User>() };

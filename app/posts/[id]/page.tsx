@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getBaseUrl } from '@/lib/base-url';
+import { serverFetch } from '@/lib/server-fetch';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -8,8 +8,7 @@ type Post = { id:number; title:string; body:string; authorId:number };
 type User = { id:number; name:string };
 
 async function fetchPost(id:number) {
-  const base = getBaseUrl();
-  const res = await fetch(`${base}/api/posts/${id}`, { cache: 'no-store' });
+  const res = await serverFetch(`/api/posts/${id}`);
   if (res.status === 404) return null;
   if (!res.ok) return { error: `status:${res.status}` };
   return res.json() as Promise<{ post: Post; author?: User|null }>;
@@ -31,7 +30,7 @@ export default async function PostDetail({ params }: { params: { id: string } })
       </div>
       <div className="card"><p>{post.body}</p></div>
       <p style={{ marginTop: 12, color: '#666' }}>
-        Fetched via <code>/api/posts/{id}</code> at request-time.
+        Fetched via <code>/api/posts/{id}</code> at request-time (cookies forwarded).
       </p>
     </article>
   );

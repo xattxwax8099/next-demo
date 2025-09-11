@@ -1,13 +1,12 @@
-import { getBaseUrl } from '@/lib/base-url';
+import { serverFetch } from '@/lib/server-fetch';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 async function getSummary() {
-  const base = getBaseUrl();
   const [uRes, pRes] = await Promise.all([
-    fetch(`${base}/api/users`, { cache: 'no-store' }),
-    fetch(`${base}/api/posts`, { cache: 'no-store' }),
+    serverFetch('/api/users'),
+    serverFetch('/api/posts'),
   ]);
   if (!uRes.ok || !pRes.ok) {
     return { error: `users:${uRes.status} posts:${pRes.status}`, users: 0, posts: 0 };
@@ -29,7 +28,7 @@ export default async function Home() {
         <div className="card"><h3>Posts</h3><p>Total: <b>{'posts' in data ? data.posts : 0}</b></p></div>
       </div>
       <p style={{ marginTop: 12, color: '#666' }}>
-        This page calls <code>/api/users</code> and <code>/api/posts</code> at request-time.
+        SSR calls <code>/api/users</code> and <code>/api/posts</code> and forwards cookies/headers.
       </p>
     </section>
   );

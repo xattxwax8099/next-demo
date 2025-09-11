@@ -46,3 +46,6 @@ npm start
 ลองเรียก:
 - `/api/users`, `/api/posts`, `/api/posts/101`, `/api/health`
 - หน้า: `/`, `/users`, `/posts`, `/posts/101`
+
+
+**อัปเดต:** เพิ่ม `lib/server-fetch.ts` เพื่อ forward cookies/headers (รวมถึง Vercel Password Protection) ป้องกัน 401 เมื่อ SSR เรียก API ใน Production.
